@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [listofPosts, setListOfPosts] = useState([]);
 
-  console.log("home");
-
   useEffect(() => {
     axios.get("http://localhost:3001/posts").then((response) => {
       setListOfPosts(response.data);
