@@ -1,65 +1,83 @@
 import React from "react";
+import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function CreatePost() {
-  const initialValues = {
-    title: "",
-    postText: "",
-    username: "",
-  };
+  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const validationSchema = Yup.object().shape({
-    title: Yup.string().required(),
-    postText: Yup.string().required(),
-    username: Yup.string().min(3).max(15).required(),
-  });
+    const initialValues = {
+      title: "",
+      postText: "",
+      username: "",
+    };
 
-  const onSubmit = (data, { resetForm }) => {
-    axios.post("http://localhost:3001/posts", data).then(() => {
-      resetForm();
+    const validationSchema = Yup.object().shape({
+      title: Yup.string().required(),
+      postText: Yup.string().required(),
+      username: Yup.string().min(3).max(15).required(),
     });
-  };
 
-  return (
-    <div className="createPostPage">
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        <Form>
-          <label>Title: </label>
-          <ErrorMessage name="title" component="span" />
-          <Field
-            autocomplete="on"
-            id="inputCreatePost"
-            name="title"
-            placeholder="Ex.Title..."
-          />
-          <label>Post: </label>
-          <ErrorMessage name="postText" component="span" />
-          <Field
-            autocomplete="on"
-            id="inputCreatePost"
-            name="postText"
-            placeholder="Ex.post..."
-          />
-          <label>Username: </label>
-          <ErrorMessage name="username" component="span" />
-          <Field
-            autocomplete="on"
-            id="inputCreatePost"
-            name="username"
-            placeholder="Ex.John123..."
-          />
-          <button type="submit">Create Post</button>
-        </Form>
-      </Formik>
-    </div>
-  );
-}
+    const onSubmit = (data, { resetForm }) => {
+      axios.post("http://localhost:3001/posts", data).then(() => {
+        resetForm();
+        setSuccessMessage("Post created successfully!");
+        setTimeout(() => {
+          navigate("/home");
+        }, 1200);
+      })
+        .catch(() => {
+          setSuccessMessage("Something went wrong!");
+        });
+    };
+
+    return (
+      <div className="createPostPage">
+        {successMessage && (
+          <div style={{ color: "green", marginBottom: "10px" }}>
+            {successMessage}
+          </div>
+        )}
+        <Formik
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          validationSchema={validationSchema}
+        >
+          <Form>
+            <label>Title: </label>
+            <ErrorMessage name="title" component="span" />
+            <Field
+              autoComplete="on"
+              id="inputCreatePost"
+              name="title"
+              placeholder="Ex.Title..."
+            />
+            <label>Post: </label>
+            <ErrorMessage name="postText" component="span" />
+            <Field
+              autoComplete="on"
+              id="inputCreatePost"
+              name="postText"
+              placeholder="Ex.post..."
+            />
+            <label>Username: </label>
+            <ErrorMessage name="username" component="span" />
+            <Field
+              autoComplete="on"
+              id="inputCreatePost"
+              name="username"
+              placeholder="Ex.John123..."
+            />
+            <button type="submit">Create Post</button>
+          </Form>
+        </Formik>
+      </div>
+    );
+  }
+
 
 //initialValues={ } onSubmit={ } validationSchema={ }
 export default CreatePost;
